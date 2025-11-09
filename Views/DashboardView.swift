@@ -196,7 +196,12 @@ struct TaskCard: View {
                 .frame(width: 4)
             
             VStack(alignment: .leading, spacing: 8) {
+                // Task ID and Priority
                 HStack {
+                    Text(workOrder.taskID)
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundColor(AppTheme.textSecondary)
+                    
                     Text(workOrder.priority.displayName)
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(workOrder.priority.color)
@@ -207,34 +212,50 @@ struct TaskCard: View {
                     
                     Spacer()
                     
-                    if let dueDate = workOrder.dueDate {
-                        Text(dueDate, style: .relative)
-                            .font(.system(size: 11, weight: .medium))
+                    // SLA Countdown or Due Date
+                    if let slaCountdown = workOrder.slaCountdown() {
+                        Text(slaCountdown)
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(workOrder.priority == .critical ? Color.red : AppTheme.textSecondary)
+                    } else if let dueDisplay = workOrder.dueDateDisplay() {
+                        Text(dueDisplay)
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundColor(AppTheme.textSecondary)
                     }
                 }
                 
+                // Title
                 Text(workOrder.title)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(AppTheme.textPrimary)
                     .lineLimit(2)
                 
-                HStack(spacing: 16) {
-                    Label(workOrder.location, systemImage: "mappin.circle.fill")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(AppTheme.textSecondary)
-                    
-                    if let equipment = workOrder.equipment {
-                        Label(equipment, systemImage: "wrench.and.screwdriver.fill")
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(AppTheme.textSecondary)
-                    }
-                }
-                
+                // Description
                 Text(workOrder.description)
                     .font(.system(size: 13, weight: .regular))
                     .foregroundColor(AppTheme.textSecondary)
-                    .lineLimit(2)
+                    .lineLimit(1)
+                
+                // Location Code and Impact
+                HStack(spacing: 12) {
+                    if let locationCode = workOrder.locationCode {
+                        Label(locationCode, systemImage: "location.fill")
+                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                            .foregroundColor(AppTheme.accentPrimary)
+                    }
+                    
+                    if let usersAffected = workOrder.usersAffected, usersAffected > 0 {
+                        Label("\(usersAffected) users", systemImage: "person.2.fill")
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundColor(AppTheme.textSecondary)
+                    }
+                    
+                    if let businessImpact = workOrder.businessImpact {
+                        Text(businessImpact)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(workOrder.priority == .critical ? Color.red : AppTheme.textSecondary)
+                    }
+                }
             }
             
             Image(systemName: "chevron.right")
