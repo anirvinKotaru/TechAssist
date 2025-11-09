@@ -1,8 +1,8 @@
 //
 //  WorkOrderDetailView.swift
-//  WorkOrderDashboard
+//  TechAssist2
 //
-//  Work Order Detail/Active View - Adapted from Workout in Progress Screen
+//  Professional Work Order Detail View
 //
 
 import SwiftUI
@@ -47,8 +47,8 @@ struct WorkOrderDetailView: View {
                 // Main Content
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Priority & Urgency Section
-                        priorityUrgencySection
+                        // Priority & Status Section
+                        priorityStatusSection
                         
                         // Basic Task Info
                         basicTaskInfoSection
@@ -73,8 +73,8 @@ struct WorkOrderDetailView: View {
         .navigationBarHidden(true)
     }
     
-    // MARK: - Priority & Urgency Section
-    private var priorityUrgencySection: some View {
+    // MARK: - Priority & Status Section
+    private var priorityStatusSection: some View {
         VStack(spacing: 12) {
             HStack {
                 Text(workOrder.priority.displayName)
@@ -288,8 +288,6 @@ struct WorkOrderDetailView: View {
         .background(AppTheme.backgroundSecondary)
         .cornerRadius(AppTheme.cardCornerRadius)
     }
-    
-    // MARK: - Helper Functions
 }
 
 // MARK: - QR Code View

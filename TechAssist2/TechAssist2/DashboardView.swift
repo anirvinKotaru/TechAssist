@@ -1,6 +1,6 @@
 //
 //  DashboardView.swift
-//  WorkOrderDashboard
+//  TechAssist2
 //
 //  Main Dashboard - Adapted from Fitness App Home Screen
 //
@@ -8,8 +8,16 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @State private var workOrders = WorkOrder.sampleData
-    let technicianName = "Godfrey Ponce"
+    @ObservedObject var firebaseService = FirebaseService.shared
+    @EnvironmentObject var authViewModel: AuthenticationViewModel
+    
+    var technicianName: String {
+        authViewModel.userName?.uppercased() ?? "TECHNICIAN"
+    }
+    
+    var workOrders: [WorkOrder] {
+        firebaseService.workOrders.isEmpty ? WorkOrder.sampleData : firebaseService.workOrders
+    }
     
     var openWorkOrders: Int {
         workOrders.filter { $0.status != .completed }.count
@@ -89,13 +97,26 @@ struct DashboardView: View {
                     .fill(AppTheme.accentPrimary)
                     .frame(width: 50, height: 50)
                     .overlay(
-                        Text("MB")
+                        Text(getInitials())
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.white)
                     )
             }
         }
         .padding(.top, 60)
+    }
+    
+    private func getInitials() -> String {
+        guard let name = authViewModel.userName else {
+            return "U"
+        }
+        let components = name.components(separatedBy: " ")
+        if components.count >= 2 {
+            return String(components[0].prefix(1)) + String(components[1].prefix(1))
+        } else if !components.isEmpty {
+            return String(components[0].prefix(2)).uppercased()
+        }
+        return "U"
     }
     
     private var keyMetricsSection: some View {
@@ -271,7 +292,7 @@ struct TaskCard: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         DashboardView()
+            .environmentObject(AuthenticationViewModel())
             .preferredColorScheme(.dark)
     }
 }
-
