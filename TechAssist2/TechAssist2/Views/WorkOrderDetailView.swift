@@ -9,8 +9,31 @@ import SwiftUI
 import CoreImage.CIFilterBuiltins
 
 struct WorkOrderDetailView: View {
-    let workOrder: WorkOrder
+    @State private var workOrder: WorkOrder
+    @ObservedObject private var firebaseService = FirebaseService.shared
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.openURL) private var openURL
+    
+    @State private var showIssueDocument = false
+    @State private var showAIAssistant = false
+    @State private var isUpdatingWorkOrder = false
+    @State private var alertInfo: AlertInfo?
+    
+    private let supervisorContact = "tel:19725550134"
+    
+    private var issueDocument: ServerIssueDocument? {
+        ServerIssueDocumentLibrary.document(for: workOrder.issueDocumentId)
+    }
+    
+    struct AlertInfo: Identifiable {
+        let id = UUID()
+        let title: String
+        let message: String
+    }
+    
+    init(workOrder: WorkOrder) {
+        _workOrder = State(initialValue: workOrder)
+    }
     
     var body: some View {
         ZStack {
@@ -62,6 +85,13 @@ struct WorkOrderDetailView: View {
                         // Technical Requirements
                         technicalRequirementsSection
                         
+                        if let document = issueDocument {
+                            issueDocumentSection(document)
+                            resolutionActionsSection(document)
+                        } else {
+                            resolutionActionsSection(nil)
+                        }
+                        
                         // QR Code Section
                         qrCodeSection
                     }
@@ -71,6 +101,21 @@ struct WorkOrderDetailView: View {
             }
         }
         .navigationBarHidden(true)
+        .sheet(isPresented: $showIssueDocument) {
+            if let document = issueDocument {
+                IssueDocumentDetailView(document: document, workOrder: workOrder)
+            }
+        }
+        .sheet(isPresented: $showAIAssistant) {
+            AIAssistantView(workOrder: workOrder, document: issueDocument)
+        }
+        .alert(item: $alertInfo) { info in
+            Alert(
+                title: Text(info.title),
+                message: Text(info.message),
+                dismissButton: .default(Text("OK"))
+            )
+        }
     }
     
     // MARK: - Priority & Status Section
@@ -260,6 +305,191 @@ struct WorkOrderDetailView: View {
         .cornerRadius(AppTheme.cardCornerRadius)
     }
     
+    // MARK: - Issue Document Section
+    private func issueDocumentSection(_ document: ServerIssueDocument) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("ACTIVE INCIDENT PLAYBOOK")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(AppTheme.textSecondary)
+                    
+                    Text(document.title)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(AppTheme.textPrimary)
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    showIssueDocument = true
+                }) {
+                    Text("View Document")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(AppTheme.accentPrimary)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(AppTheme.accentPrimary.opacity(0.12))
+                        .cornerRadius(8)
+                }
+            }
+            
+            Text(document.summary)
+                .font(.system(size: 14))
+                .foregroundColor(AppTheme.textSecondary)
+            
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Immediate Actions")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(AppTheme.textPrimary)
+                
+                ForEach(document.immediateActions.prefix(3), id: \.self) { action in
+                    BulletRow(text: action)
+                }
+            }
+            
+            if let firstStep = document.resolutionSteps.first {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Next Step")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(AppTheme.textPrimary)
+                    
+                    Text(firstStep)
+                        .font(.system(size: 13))
+                        .foregroundColor(AppTheme.textSecondary)
+                }
+            }
+        }
+        .padding(AppTheme.cardPadding)
+        .background(AppTheme.backgroundSecondary)
+        .cornerRadius(AppTheme.cardCornerRadius)
+    }
+    
+    // MARK: - Resolution Actions
+    private func resolutionActionsSection(_ document: ServerIssueDocument?) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("AVAILABLE ACTIONS")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(AppTheme.textPrimary)
+            
+            if let document = document {
+                DetailRow(
+                    label: "Estimated Time",
+                    value: "\(document.estimatedTimeMinutes) min",
+                    color: AppTheme.textPrimary
+                )
+            }
+            
+            VStack(spacing: 12) {
+                Button {
+                    resolveIssue()
+                } label: {
+                    ActionButtonLabel(
+                        icon: "checkmark.seal.fill",
+                        title: workOrder.status == .completed ? "Issue Resolved" : "Mark Issue Resolved",
+                        subtitle: "Close the work order and log the fix",
+                        foregroundColor: .white,
+                        backgroundColor: workOrder.status == .completed ? AppTheme.success.opacity(0.7) : AppTheme.success
+                    )
+                }
+                .disabled(isUpdatingWorkOrder || workOrder.status == .completed)
+                
+                if isUpdatingWorkOrder {
+                    HStack(spacing: 10) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.accentPrimary))
+                        Text("Updating work order status…")
+                            .font(.system(size: 12))
+                            .foregroundColor(AppTheme.textSecondary)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 4)
+                }
+                
+                Button {
+                    showAIAssistant = true
+                } label: {
+                    ActionButtonLabel(
+                        icon: "sparkles",
+                        title: "Ask AI for Help",
+                        subtitle: "Get troubleshooting guidance for this issue",
+                        foregroundColor: AppTheme.accentPrimary,
+                        backgroundColor: AppTheme.accentPrimary.opacity(0.12)
+                    )
+                }
+                
+                Button {
+                    callSupervisor()
+                } label: {
+                    ActionButtonLabel(
+                        icon: "phone.fill",
+                        title: "Call Supervisor",
+                        subtitle: "Escalate for hands-on support at the rack",
+                        foregroundColor: Color(red: 0.8, green: 0.1, blue: 0.1),
+                        backgroundColor: Color(red: 0.8, green: 0.1, blue: 0.1).opacity(0.12)
+                    )
+                }
+            }
+        }
+        .padding(AppTheme.cardPadding)
+        .background(AppTheme.backgroundSecondary)
+        .cornerRadius(AppTheme.cardCornerRadius)
+    }
+    
+    private func resolveIssue() {
+        guard workOrder.status != .completed else {
+            alertInfo = AlertInfo(title: "Already Completed", message: "This work order is already marked as completed.")
+            return
+        }
+        
+        isUpdatingWorkOrder = true
+        var updatedOrder = workOrder
+        updatedOrder.status = .completed
+        
+        Task {
+            do {
+                try await firebaseService.updateWorkOrder(updatedOrder)
+                await MainActor.run {
+                    workOrder = updatedOrder
+                    alertInfo = AlertInfo(
+                        title: "Marked as Resolved",
+                        message: "The work order has been updated to Completed and synced to Firebase."
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    workOrder = updatedOrder
+                    alertInfo = AlertInfo(
+                        title: "Marked Locally",
+                        message: "Issue marked as resolved locally, but syncing to Firebase failed: \(error.localizedDescription)"
+                    )
+                }
+            }
+            
+            await MainActor.run {
+                isUpdatingWorkOrder = false
+            }
+        }
+    }
+    
+    private func callSupervisor() {
+        guard let url = URL(string: supervisorContact) else {
+            alertInfo = AlertInfo(
+                title: "Supervisor Contact Not Configured",
+                message: "Unable to initiate a call because the supervisor contact number is missing."
+            )
+            return
+        }
+        
+        let result = openURL(url)
+        if case .discarded = result {
+            alertInfo = AlertInfo(
+                title: "Call Not Started",
+                message: "Your device could not start the call. Please dial the supervisor manually."
+            )
+        }
+    }
+    
     // MARK: - QR Code Section
     private var qrCodeSection: some View {
         VStack(spacing: 16) {
@@ -346,6 +576,65 @@ struct DetailRow: View {
                 .foregroundColor(color)
                 .multilineTextAlignment(.trailing)
         }
+    }
+}
+
+// MARK: - Bullet Row
+struct BulletRow: View {
+    let text: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Circle()
+                .fill(AppTheme.accentPrimary)
+                .frame(width: 6, height: 6)
+                .padding(.top, 6)
+            
+            Text(text)
+                .font(.system(size: 13))
+                .foregroundColor(AppTheme.textSecondary)
+                .multilineTextAlignment(.leading)
+        }
+    }
+}
+
+// MARK: - Action Button Label
+struct ActionButtonLabel: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let foregroundColor: Color
+    let backgroundColor: Color
+    
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(foregroundColor)
+                .frame(width: 32, height: 32)
+                .background(foregroundColor.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(foregroundColor)
+                
+                Text(subtitle)
+                    .font(.system(size: 12))
+                    .foregroundColor(foregroundColor.opacity(0.7))
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(foregroundColor.opacity(0.8))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(backgroundColor)
+        .cornerRadius(12)
     }
 }
 

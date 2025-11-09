@@ -181,6 +181,7 @@ class FirebaseService: ObservableObject {
         let requiredTools = data["requiredTools"] as? String
         let skillsNeeded = data["skillsNeeded"] as? String
         let qrCodeData = data["qrCodeData"] as? String
+        let issueDocumentId = data["issueDocumentId"] as? String
         
         return WorkOrder(
             id: id,
@@ -206,7 +207,8 @@ class FirebaseService: ObservableObject {
             requiredTools: requiredTools,
             skillsNeeded: skillsNeeded,
             equipment: equipment,
-            qrCodeData: qrCodeData
+            qrCodeData: qrCodeData,
+            issueDocumentId: issueDocumentId
         )
     }
     
@@ -278,6 +280,10 @@ class FirebaseService: ObservableObject {
         
         if let qrCodeData = workOrder.qrCodeData {
             data["qrCodeData"] = qrCodeData
+        }
+        
+        if let issueDocumentId = workOrder.issueDocumentId {
+            data["issueDocumentId"] = issueDocumentId
         }
         
         return data

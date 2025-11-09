@@ -104,6 +104,9 @@ struct WorkOrder: Identifiable, Hashable {
     // QR Code
     var qrCodeData: String? // QR code data for verification
     
+    // Issue Document
+    var issueDocumentId: String?
+    
     init(
         id: UUID = UUID(),
         taskID: String,
@@ -128,7 +131,8 @@ struct WorkOrder: Identifiable, Hashable {
         requiredTools: String? = nil,
         skillsNeeded: String? = nil,
         equipment: String? = nil,
-        qrCodeData: String? = nil
+        qrCodeData: String? = nil,
+        issueDocumentId: String? = nil
     ) {
         self.id = id
         self.taskID = taskID
@@ -154,6 +158,7 @@ struct WorkOrder: Identifiable, Hashable {
         self.skillsNeeded = skillsNeeded
         self.equipment = equipment
         self.qrCodeData = qrCodeData ?? taskID // Default QR code is the task ID
+        self.issueDocumentId = issueDocumentId
     }
     
     // Helper function to calculate SLA countdown
@@ -218,7 +223,8 @@ extension WorkOrder {
             requiredTools: "PSU-750W-DELL, ESD strap",
             skillsNeeded: "HV Certified",
             equipment: "Server U24 - PSU Unit",
-            qrCodeData: "WO-8472-B-A12-U24"
+            qrCodeData: "WO-8472-B-A12-U24",
+            issueDocumentId: ServerIssueDocumentLibrary.DocumentID.powerSupplyFailure.rawValue
         ),
         WorkOrder(
             taskID: "WO-9123",
@@ -241,7 +247,8 @@ extension WorkOrder {
             requiredTools: "Multimeter, Refrigerant gauge",
             skillsNeeded: "HVAC Certified",
             equipment: "CRAC Unit #5",
-            qrCodeData: "WO-9123-A-CRAC-5"
+            qrCodeData: "WO-9123-A-CRAC-5",
+            issueDocumentId: ServerIssueDocumentLibrary.DocumentID.thermalEvent.rawValue
         ),
         WorkOrder(
             taskID: "WO-7891",
@@ -264,7 +271,8 @@ extension WorkOrder {
             requiredTools: "Console cable, Replacement router",
             skillsNeeded: "Network Certified",
             equipment: "Core Router #1",
-            qrCodeData: "WO-7891-C-C05-U42"
+            qrCodeData: "WO-7891-C-C05-U42",
+            issueDocumentId: ServerIssueDocumentLibrary.DocumentID.networkOutage.rawValue
         ),
         WorkOrder(
             taskID: "WO-6543",
@@ -287,7 +295,8 @@ extension WorkOrder {
             requiredTools: "Server lift, ESD equipment",
             skillsNeeded: "Server Hardware Certified",
             equipment: "Server Array #8",
-            qrCodeData: "WO-6543-B-B08"
+            qrCodeData: "WO-6543-B-B08",
+            issueDocumentId: ServerIssueDocumentLibrary.DocumentID.firmwareMismatch.rawValue
         ),
         WorkOrder(
             taskID: "WO-5234",
@@ -310,7 +319,8 @@ extension WorkOrder {
             requiredTools: "Battery tester, Multimeter",
             skillsNeeded: "Electrical Certified",
             equipment: "UPS System #3",
-            qrCodeData: "WO-5234-A-UPS-3"
+            qrCodeData: "WO-5234-A-UPS-3",
+            issueDocumentId: ServerIssueDocumentLibrary.DocumentID.raidDegradation.rawValue
         ),
         WorkOrder(
             taskID: "WO-4123",
