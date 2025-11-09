@@ -31,54 +31,44 @@ struct ProfileView: View {
                 ScrollView {
                     VStack(spacing: 24) {
                         // Profile Header
-                        VStack(spacing: 16) {
-                            Circle()
-                                .fill(AppTheme.accentPrimary.opacity(0.1))
-                                .frame(width: 90, height: 90)
-                                .overlay(
-                                    Text(initials)
-                                        .font(.system(size: 32, weight: .semibold))
-                                        .foregroundColor(AppTheme.accentPrimary)
-                                )
+                        VStack(spacing: 12) {
+                            Image(AppTheme.appLogo)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 60, height: 60)
                             
-                            Text(authViewModel.userName ?? "Technician")
-                                .font(.system(size: 22, weight: .semibold))
+                            // Show name as primary identifier, fallback to email if name not available
+                            Text(authViewModel.userName ?? authViewModel.userEmail ?? "Technician")
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(AppTheme.textPrimary)
                             
-                            if let email = authViewModel.userEmail {
+                            // Show email below name if name exists, otherwise hide this
+                            if authViewModel.userName != nil, let email = authViewModel.userEmail {
                                 Text(email)
-                                    .font(.system(size: 15, weight: .regular))
+                                    .font(.system(size: 14, weight: .regular))
                                     .foregroundColor(AppTheme.textSecondary)
                             }
-                            
-                            Text("Technician")
-                                .font(.system(size: 13, weight: .regular))
-                                .foregroundColor(AppTheme.textSecondary)
                         }
-                        .padding(.top, 60)
+                        .padding(.top, 32)
                         
                         // Logout Button
                         Button(action: {
                             authViewModel.logout()
                         }) {
-                            HStack {
-                                Image(systemName: "arrow.right.square")
-                                    .font(.system(size: 16))
-                                Text("Sign Out")
-                                    .font(.system(size: 15, weight: .medium))
-                                Spacer()
-                            }
-                            .foregroundColor(AppTheme.error)
-                            .padding(AppTheme.cardPadding)
-                            .background(Color.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius)
-                                    .stroke(AppTheme.cardBorderColor, lineWidth: 1)
-                            )
-                            .cornerRadius(AppTheme.cardCornerRadius)
+                            Text("Sign Out")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(AppTheme.error)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(AppTheme.backgroundSecondary)
+                                .cornerRadius(AppTheme.cardCornerRadius)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius)
+                                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                )
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 40)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 24)
                         
                         Spacer()
                     }

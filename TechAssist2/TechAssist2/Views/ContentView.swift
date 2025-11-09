@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @StateObject private var firebaseService = FirebaseService.shared
@@ -16,34 +17,49 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             DashboardView()
                 .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Dashboard")
+                    Image(systemName: "house")
+                    Text("Home")
                 }
                 .tag(0)
             
             WorkOrderListView()
                 .tabItem {
                     Image(systemName: "list.bullet")
-                    Text("Work Orders")
+                    Text("Orders")
                 }
                 .tag(1)
             
-            PriorityView()
+            SearchView()
                 .tabItem {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                    Text("Priority")
+                    Image(systemName: "magnifyingglass")
+                    Text("Search")
                 }
                 .tag(2)
             
             ProfileView()
                 .tabItem {
-                    Image(systemName: "person.fill")
+                    Image(systemName: "person")
                     Text("Profile")
                 }
                 .tag(3)
         }
         .accentColor(AppTheme.accentPrimary)
         .onAppear {
+            // Configure tab bar appearance for dark theme
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor(red: 0.08, green: 0.12, blue: 0.18, alpha: 1.0)
+            appearance.shadowColor = .clear
+            
+            // Tab bar item colors
+            appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.6, alpha: 1.0)
+            appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(white: 0.6, alpha: 1.0)]
+            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(AppTheme.accentPrimary)
+            appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppTheme.accentPrimary)]
+            
+            UITabBar.appearance().standardAppearance = appearance
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+            
             // Fetch work orders from Firebase when view appears
             firebaseService.fetchWorkOrders()
         }

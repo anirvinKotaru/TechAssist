@@ -235,8 +235,40 @@ class AuthService: ObservableObject {
                             case .success(let profile):
                                 // Update user information
                                 self.userEmail = profile.email
-                                // Use name, nickname, or email as fallback
-                                self.userName = profile.name ?? profile.nickname ?? profile.email
+                                
+                                // Extract name from profile with multiple fallback strategies
+                                // 1. Try full name (name field)
+                                // 2. Try constructing from given_name + family_name
+                                // 3. Try nickname
+                                // 4. Try email local part (before @) as display name
+                                // 5. Fallback to full email
+                                if let name = profile.name, !name.isEmpty {
+                                    self.userName = name
+                                } else if let givenName = profile.givenName, let familyName = profile.familyName {
+                                    self.userName = "\(givenName) \(familyName)"
+                                } else if let givenName = profile.givenName {
+                                    self.userName = givenName
+                                } else if let nickname = profile.nickname, !nickname.isEmpty {
+                                    self.userName = nickname
+                                } else if let email = profile.email {
+                                    // Extract display name from email (part before @)
+                                    let emailParts = email.components(separatedBy: "@")
+                                    if let localPart = emailParts.first, !localPart.isEmpty {
+                                        // Capitalize first letter and replace dots/underscores with spaces
+                                        let displayName = localPart
+                                            .replacingOccurrences(of: ".", with: " ")
+                                            .replacingOccurrences(of: "_", with: " ")
+                                            .replacingOccurrences(of: "-", with: " ")
+                                            .split(separator: " ")
+                                            .map { $0.capitalized }
+                                            .joined(separator: " ")
+                                        self.userName = displayName.isEmpty ? email : displayName
+                                    } else {
+                                        self.userName = email
+                                    }
+                                } else {
+                                    self.userName = nil
+                                }
                             case .failure(let error):
                                 // Log error but don't break authentication flow
                                 print("Error retrieving user info: \(error.localizedDescription)")

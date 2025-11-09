@@ -13,56 +13,83 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            AppTheme.backgroundPrimary.ignoresSafeArea()
+            // Dark blue gradient background
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.1, green: 0.15, blue: 0.25),
+                    Color(red: 0.05, green: 0.1, blue: 0.2),
+                    Color(red: 0.0, green: 0.05, blue: 0.15)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
             
-            VStack(spacing: 32) {
+            VStack(spacing: 0) {
                 Spacer()
                 
-                // Logo/App Name
-                VStack(spacing: 20) {
-                    Image(systemName: "wrench.and.screwdriver.fill")
-                        .font(.system(size: 64))
-                        .foregroundColor(AppTheme.accentPrimary)
+                // Logo and App Name
+                VStack(spacing: 16) {
+                    // Logo with fallback
+                    Group {
+                        if UIImage(named: AppTheme.appLogo) != nil {
+                            Image(AppTheme.appLogo)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 70, height: 70)
+                                .foregroundColor(.white)
+                        } else {
+                            // Fallback icon if logo not found
+                            Image(systemName: "wrench.and.screwdriver")
+                                .font(.system(size: 50))
+                                .foregroundColor(.white)
+                        }
+                    }
                     
                     Text("TechAssist")
-                        .font(.system(size: 32, weight: .semibold))
-                        .foregroundColor(AppTheme.textPrimary)
-                    
-                    Text("Technician Dashboard")
-                        .font(.system(size: 15, weight: .regular))
-                        .foregroundColor(AppTheme.textSecondary)
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundColor(.white)
                 }
-                
-                Spacer()
+                .padding(.bottom, 40)
                 
                 // Login Button
                 Button(action: {
                     viewModel.login()
                 }) {
-                    HStack {
-                        if viewModel.isLoading {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        } else {
-                            Text("Sign In")
-                                .font(.system(size: 18, weight: .semibold))
-                        }
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Text("Sign In")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
                     }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(AppTheme.accentPrimary)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
                 }
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color(red: 0.2, green: 0.4, blue: 0.8),
+                            Color(red: 0.1, green: 0.3, blue: 0.7)
+                        ]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
                 .disabled(viewModel.isLoading)
-                .padding(.horizontal, 40)
+                .padding(.horizontal, 32)
                 
                 // Error Message
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
-                        .font(.system(size: 14))
-                        .foregroundColor(AppTheme.error)
-                        .padding(.horizontal, 40)
+                        .font(.system(size: 13))
+                        .foregroundColor(.red.opacity(0.9))
+                        .padding(.horizontal, 32)
+                        .padding(.top, 16)
                         .multilineTextAlignment(.center)
                 }
                 

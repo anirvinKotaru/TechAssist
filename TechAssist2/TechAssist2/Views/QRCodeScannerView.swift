@@ -89,7 +89,7 @@ struct QRCodeScannerView: View {
                 
                 // Instructions
                 VStack(spacing: 8) {
-                    Text("Scan QR code to find work order")
+                    Text("Scan QR code for work order or troubleshooting article")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.white)
                     

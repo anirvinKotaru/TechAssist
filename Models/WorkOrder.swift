@@ -17,13 +17,13 @@ enum WorkOrderPriority: String, CaseIterable {
     var displayName: String {
         switch self {
         case .critical:
-            return "🚨 CRITICAL"
+            return "Critical"
         case .high:
-            return "HIGH"
+            return "High"
         case .medium:
-            return "MEDIUM"
+            return "Medium"
         case .low:
-            return "LOW"
+            return "Low"
         }
     }
     
