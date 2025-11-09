@@ -19,17 +19,17 @@ struct LoginView: View {
                 Spacer()
                 
                 // Logo/App Name
-                VStack(spacing: 16) {
+                VStack(spacing: 20) {
                     Image(systemName: "wrench.and.screwdriver.fill")
-                        .font(.system(size: 80))
+                        .font(.system(size: 64))
                         .foregroundColor(AppTheme.accentPrimary)
                     
                     Text("TechAssist")
-                        .font(.system(size: 36, weight: .bold))
+                        .font(.system(size: 32, weight: .semibold))
                         .foregroundColor(AppTheme.textPrimary)
                     
-                    Text("NMC^2 Technician Dashboard")
-                        .font(.system(size: 16, weight: .medium))
+                    Text("Technician Dashboard")
+                        .font(.system(size: 15, weight: .regular))
                         .foregroundColor(AppTheme.textSecondary)
                 }
                 
@@ -49,10 +49,10 @@ struct LoginView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: 56)
+                    .frame(height: 52)
                     .background(AppTheme.accentPrimary)
                     .foregroundColor(.white)
-                    .cornerRadius(12)
+                    .cornerRadius(10)
                 }
                 .disabled(viewModel.isLoading)
                 .padding(.horizontal, 40)
@@ -75,7 +75,6 @@ struct LoginView: View {
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(viewModel: AuthenticationViewModel())
-            .preferredColorScheme(.dark)
     }
 }
 

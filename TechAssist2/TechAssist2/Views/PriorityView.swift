@@ -41,23 +41,13 @@ struct PriorityView: View {
                     VStack(spacing: 24) {
                         // Header
                         HStack {
-                            Button(action: {}) {
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 18, weight: .semibold))
-                                    .foregroundColor(AppTheme.textPrimary)
-                            }
-                            
                             Spacer()
                             
-                            Text("PRIORITY QUEUE")
-                                .font(.system(size: 18, weight: .bold))
+                            Text("Priority Queue")
+                                .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(AppTheme.textPrimary)
                             
                             Spacer()
-                            
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.clear)
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 60)
@@ -66,8 +56,8 @@ struct PriorityView: View {
                         // Top Priority Section
                         if !criticalPriorityOrders.isEmpty {
                             VStack(alignment: .leading, spacing: 16) {
-                                Text("TOP PRIORITY")
-                                    .font(.system(size: 16, weight: .bold))
+                                Text("Top Priority")
+                                    .font(.system(size: 18, weight: .semibold))
                                     .foregroundColor(AppTheme.textPrimary)
                                 
                                 HStack(spacing: 16) {
@@ -85,14 +75,14 @@ struct PriorityView: View {
                         
                         // Priority Leaderboard
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("PRIORITY QUEUE")
-                                .font(.system(size: 16, weight: .bold))
+                            Text("Priority Queue")
+                                .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(AppTheme.textPrimary)
                             
                             // Critical Priority List
                             if !criticalPriorityOrders.isEmpty {
                                 PrioritySection(
-                                    title: "🚨 CRITICAL PRIORITY",
+                                    title: "Critical Priority",
                                     orders: criticalPriorityOrders,
                                     color: WorkOrderPriority.critical.color
                                 )
@@ -101,7 +91,7 @@ struct PriorityView: View {
                             // High Priority List
                             if !highPriorityOrders.isEmpty {
                                 PrioritySection(
-                                    title: "HIGH PRIORITY",
+                                    title: "High Priority",
                                     orders: highPriorityOrders,
                                     color: WorkOrderPriority.high.color
                                 )
@@ -110,7 +100,7 @@ struct PriorityView: View {
                             // Medium Priority List
                             if !mediumPriorityOrders.isEmpty {
                                 PrioritySection(
-                                    title: "MEDIUM PRIORITY",
+                                    title: "Medium Priority",
                                     orders: mediumPriorityOrders,
                                     color: WorkOrderPriority.medium.color
                                 )
@@ -119,7 +109,7 @@ struct PriorityView: View {
                             // Low Priority List
                             if !lowPriorityOrders.isEmpty {
                                 PrioritySection(
-                                    title: "LOW PRIORITY",
+                                    title: "Low Priority",
                                     orders: lowPriorityOrders,
                                     color: WorkOrderPriority.low.color
                                 )
@@ -130,7 +120,7 @@ struct PriorityView: View {
                         // Assign Work Order Section
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Assign Work Order")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(AppTheme.textPrimary)
                             
                             Text("Enter work order details")
@@ -141,8 +131,12 @@ struct PriorityView: View {
                                 .font(.system(size: 14))
                                 .foregroundColor(AppTheme.textPrimary)
                                 .padding(12)
-                                .background(AppTheme.backgroundSecondary)
-                                .cornerRadius(12)
+                                .background(Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(AppTheme.cardBorderColor, lineWidth: 1)
+                                )
+                                .cornerRadius(10)
                         }
                         .padding(.horizontal, 20)
                         .padding(.bottom, 100)
@@ -163,34 +157,38 @@ struct PriorityCard: View {
         VStack(spacing: 8) {
             ZStack {
                 Circle()
-                    .fill(AppTheme.backgroundSecondary)
-                    .frame(width: 60, height: 60)
+                    .fill(Color.white)
+                    .overlay(
+                        Circle()
+                            .stroke(AppTheme.cardBorderColor, lineWidth: 1)
+                    )
+                    .frame(width: 56, height: 56)
                 
                 if isTop {
                     Circle()
-                        .fill(WorkOrderPriority.high.color)
-                        .frame(width: 20, height: 20)
+                        .fill(workOrder.priority.color)
+                        .frame(width: 18, height: 18)
                         .overlay(
                             Text("\(rank)")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.system(size: 10, weight: .semibold))
                                 .foregroundColor(.white)
                         )
-                        .offset(x: 25, y: -25)
+                        .offset(x: 22, y: -22)
                 }
                 
                 Image(systemName: "wrench.and.screwdriver.fill")
-                    .font(.system(size: 24))
+                    .font(.system(size: 20))
                     .foregroundColor(workOrder.priority.color)
             }
             
             Text(workOrder.title)
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 11, weight: .medium))
                 .foregroundColor(AppTheme.textPrimary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
             
             Text("Priority \(rank)")
-                .font(.system(size: 10, weight: .medium))
+                .font(.system(size: 9, weight: .regular))
                 .foregroundColor(AppTheme.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -248,7 +246,11 @@ struct PrioritySection: View {
                         }
                     }
                     .padding(AppTheme.cardPadding)
-                    .background(AppTheme.backgroundSecondary)
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius)
+                            .stroke(AppTheme.cardBorderColor, lineWidth: 1)
+                    )
                     .cornerRadius(AppTheme.cardCornerRadius)
                 }
             }
@@ -259,6 +261,5 @@ struct PrioritySection: View {
 struct PriorityView_Previews: PreviewProvider {
     static var previews: some View {
         PriorityView()
-            .preferredColorScheme(.dark)
     }
 }

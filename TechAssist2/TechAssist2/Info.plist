@@ -26,5 +26,8 @@
 	<string>dev-frosjzi3e85zszxa.us.auth0.com</string>
 	<key>ClientId</key>
 	<string>JNpxt8bUAJCYFnsaOhr8hv3yGee42fi1</string>
+	<!-- Camera Permission for QR Code Scanning -->
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is required to scan QR codes for work order verification.</string>
 </dict>
 </plist>

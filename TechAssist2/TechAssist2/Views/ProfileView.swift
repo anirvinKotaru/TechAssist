@@ -33,26 +33,26 @@ struct ProfileView: View {
                         // Profile Header
                         VStack(spacing: 16) {
                             Circle()
-                                .fill(AppTheme.accentPrimary)
-                                .frame(width: 100, height: 100)
+                                .fill(AppTheme.accentPrimary.opacity(0.1))
+                                .frame(width: 90, height: 90)
                                 .overlay(
                                     Text(initials)
-                                        .font(.system(size: 36, weight: .bold))
-                                        .foregroundColor(.white)
+                                        .font(.system(size: 32, weight: .semibold))
+                                        .foregroundColor(AppTheme.accentPrimary)
                                 )
                             
-                            Text(authViewModel.userName ?? "MICHAEL BERNANDO")
-                                .font(.system(size: 24, weight: .bold))
+                            Text(authViewModel.userName ?? "Technician")
+                                .font(.system(size: 22, weight: .semibold))
                                 .foregroundColor(AppTheme.textPrimary)
                             
                             if let email = authViewModel.userEmail {
                                 Text(email)
-                                    .font(.system(size: 16, weight: .medium))
+                                    .font(.system(size: 15, weight: .regular))
                                     .foregroundColor(AppTheme.textSecondary)
                             }
                             
-                            Text("NMC^2 Technician")
-                                .font(.system(size: 14, weight: .regular))
+                            Text("Technician")
+                                .font(.system(size: 13, weight: .regular))
                                 .foregroundColor(AppTheme.textSecondary)
                         }
                         .padding(.top, 60)
@@ -63,14 +63,18 @@ struct ProfileView: View {
                         }) {
                             HStack {
                                 Image(systemName: "arrow.right.square")
-                                    .font(.system(size: 18))
+                                    .font(.system(size: 16))
                                 Text("Sign Out")
-                                    .font(.system(size: 16, weight: .semibold))
+                                    .font(.system(size: 15, weight: .medium))
                                 Spacer()
                             }
                             .foregroundColor(AppTheme.error)
                             .padding(AppTheme.cardPadding)
-                            .background(AppTheme.backgroundSecondary)
+                            .background(Color.white)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius)
+                                    .stroke(AppTheme.cardBorderColor, lineWidth: 1)
+                            )
                             .cornerRadius(AppTheme.cardCornerRadius)
                         }
                         .padding(.horizontal, 20)
@@ -89,6 +93,5 @@ struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
             .environmentObject(AuthenticationViewModel())
-            .preferredColorScheme(.dark)
     }
 }

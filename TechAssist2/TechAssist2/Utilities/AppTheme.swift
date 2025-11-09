@@ -2,36 +2,36 @@
 //  AppTheme.swift
 //  TechAssist2
 //
-//  NMC^2 Brand Colors and Theme Configuration
+//  Minimalist White Theme Configuration
 //
 
 import SwiftUI
 
 struct AppTheme {
-    // Dark Background Colors
-    static let backgroundPrimary = Color(red: 0.11, green: 0.11, blue: 0.12) // #1C1C1E equivalent
-    static let backgroundSecondary = Color(red: 0.17, green: 0.17, blue: 0.18) // Slightly lighter for cards
-    static let backgroundTertiary = Color(red: 0.22, green: 0.22, blue: 0.24)
+    // Minimalist White Background Colors
+    static let backgroundPrimary = Color.white
+    static let backgroundSecondary = Color(red: 0.98, green: 0.98, blue: 0.98) // Very light gray for subtle cards
+    static let backgroundTertiary = Color(red: 0.95, green: 0.95, blue: 0.95)
     
-    // NMC^2 Brand Colors (adjust these based on actual brand colors)
-    // Using professional blue/teal as default - replace with actual NMC^2 colors
-    static let accentPrimary = Color(red: 0.0, green: 0.6, blue: 0.8) // Professional blue
-    static let accentSecondary = Color(red: 0.0, green: 0.7, blue: 0.9) // Lighter blue
-    static let accentTertiary = Color(red: 0.2, green: 0.8, blue: 1.0) // Bright cyan
+    // Subtle Accent Colors
+    static let accentPrimary = Color(red: 0.0, green: 0.45, blue: 0.80) // Soft blue
+    static let accentSecondary = Color(red: 0.0, green: 0.5, blue: 0.9)
+    static let accentTertiary = Color(red: 0.1, green: 0.6, blue: 0.95)
     
-    // Text Colors
-    static let textPrimary = Color.white
-    static let textSecondary = Color(red: 0.7, green: 0.7, blue: 0.7)
-    static let textTertiary = Color(red: 0.5, green: 0.5, blue: 0.5)
+    // Dark Text Colors for White Background
+    static let textPrimary = Color(red: 0.1, green: 0.1, blue: 0.1) // Near black
+    static let textSecondary = Color(red: 0.4, green: 0.4, blue: 0.4) // Medium gray
+    static let textTertiary = Color(red: 0.6, green: 0.6, blue: 0.6) // Light gray
     
-    // Status Colors
-    static let success = Color(red: 0.2, green: 0.8, blue: 0.4)
-    static let warning = Color(red: 1.0, green: 0.84, blue: 0.0)
-    static let error = Color(red: 1.0, green: 0.3, blue: 0.3)
+    // Status Colors (softer for minimalist design)
+    static let success = Color(red: 0.2, green: 0.7, blue: 0.3)
+    static let warning = Color(red: 0.95, green: 0.7, blue: 0.0)
+    static let error = Color(red: 0.9, green: 0.25, blue: 0.25)
     
-    // Card Style
-    static let cardCornerRadius: CGFloat = 16
+    // Minimalist Card Style
+    static let cardCornerRadius: CGFloat = 12
     static let cardPadding: CGFloat = 16
+    static let cardBorderColor = Color(red: 0.9, green: 0.9, blue: 0.9) // Subtle border
 }
 
 
