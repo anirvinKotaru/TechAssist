@@ -15,7 +15,6 @@ struct WorkOrderDetailView: View {
     @Environment(\.openURL) private var openURL
     
     @State private var showIssueDocument = false
-    @State private var showAIAssistant = false
     @State private var isUpdatingWorkOrder = false
     @State private var alertInfo: AlertInfo?
     
@@ -105,9 +104,6 @@ struct WorkOrderDetailView: View {
             if let document = issueDocument {
                 IssueDocumentDetailView(document: document, workOrder: workOrder)
             }
-        }
-        .sheet(isPresented: $showAIAssistant) {
-            AIAssistantView(workOrder: workOrder, document: issueDocument)
         }
         .alert(item: $alertInfo) { info in
             Alert(
@@ -404,18 +400,6 @@ struct WorkOrderDetailView: View {
                         Spacer()
                     }
                     .padding(.horizontal, 4)
-                }
-                
-                Button {
-                    showAIAssistant = true
-                } label: {
-                    ActionButtonLabel(
-                        icon: "sparkles",
-                        title: "Ask AI for Help",
-                        subtitle: "Get troubleshooting guidance for this issue",
-                        foregroundColor: AppTheme.accentPrimary,
-                        backgroundColor: AppTheme.accentPrimary.opacity(0.12)
-                    )
                 }
                 
                 Button {

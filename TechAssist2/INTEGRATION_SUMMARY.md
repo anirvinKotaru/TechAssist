@@ -152,6 +152,13 @@ private let clientId = "YOUR_AUTH0_CLIENT_ID"   // ⚠️ Update this
 - **SETUP_AUTH0_FIREBASE.md**: Detailed setup instructions
 - **Auth0Config.plist**: Configuration template (optional)
 
+## Generative AI Removal
+
+- Gemini-powered services (`GeminiService`, AI search view model, and assistant views) have been removed.
+- `ContentView` now only exposes dashboard, work orders, priority, and profile tabs.
+- `WorkOrderDetailView` no longer offers an AI assistance action; the call-to-action now focuses on supervisor escalation and resolution logging.
+- No Gemini API keys or related configuration placeholders remain in `Config`.
+
 ## Notes
 
 - The app falls back to sample data if Firebase is unavailable
